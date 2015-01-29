@@ -13,11 +13,22 @@
     // $createdAt = date.
 
 
+
     $.ajax({
       url: $url,
       type: "GET"
     }).done(function(data){
-      console.log(data);
+      // console.log(data);
+      _.each(data, function({
+        if((data.message != undefined || data.message != "") && (data.username != undefined || data.username != "")) {
+
+    // put commands to display username/message      
+
+
+        } else {
+          return;
+        }
+      });
 
     });
 
@@ -26,15 +37,12 @@
       type: "POST",
       data: {
         message: "Hi!",
-        username: "BillyBob",
-        createdAt: Date.now()
+        username: "BillyBob"
       }
     }).done(function(data){
       console.log(data);
 
     });
-
-
 
   });
 })();
