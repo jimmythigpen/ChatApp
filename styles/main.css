@@ -10,7 +10,8 @@
   margin: 0;
   padding: 0;
   margin: 0 auto;
-  background-color: lightgrey; }
+  background-color: lightgrey;
+  overflow: scroll; }
 
 .text-input-container {
   height: 80px;

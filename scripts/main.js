@@ -4,7 +4,10 @@
   $(document).ready(function() {
 
     var serverURL = "http://tiny-pizza-server.herokuapp.com/collections/greenville-chats";
+    var userName = '';
 
+    var renderMessageTemplate = _.template($('.message-data').text());
+    var messageTemplate = $('.messages-list');
 
     //
     // Get Chat Message from input field
@@ -16,14 +19,12 @@
     // Store Username
     //
     function storeName() {
-      // event.preventDefault();
-      var userName = $(".user-name-field").val();
+      userName = $(".user-name-field").val();
       console.log(userName);
     }
 
-
     //
-    // Post message to Chat
+    // Post message to Server
     //
     function sendMessage() {
       var newMessage = $(".input-field").val();
@@ -41,18 +42,17 @@
 
 
     //
-    // Get All Chat Messages From Server
+    // Get ALl Messages from server
     //
-    // $.ajax({
-    //   url: $url,
-    //   type: "GET"
-    // }).done(function(data) {
-    //   console.log(data);
-    // });
 
-    //
-    // Make Post On Server
-    //
+    $.ajax({
+      url: serverURL,
+      type: "GET"
+    }).done(function(messages) {
+      _.each(messages, function(message) {
+        messageTemplate.append(renderMessageTemplate(message));
+      });
+    });
 
 
   });
