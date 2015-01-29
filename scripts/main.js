@@ -1,4 +1,4 @@
-(function(){
+(function() {
   'use strict';
 
 
@@ -16,7 +16,7 @@
     $.ajax({
       url: $url,
       type: "GET"
-    }).done(function(data){
+    }).done(function(data) {
       console.log(data);
 
     });
@@ -29,7 +29,7 @@
         username: "BillyBob",
         createdAt: Date.now()
       }
-    }).done(function(data){
+    }).done(function(data) {
       console.log(data);
 
     });
