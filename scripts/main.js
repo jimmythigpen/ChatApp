@@ -4,6 +4,7 @@
 
   $(document).ready(function() {
 
+
     var $url = "http://tiny-pizza-server.herokuapp.com/collections/greenville-chats";
     var $user;
     var $message;
@@ -12,7 +13,9 @@
     $message = "Looking forward to the weekend";
     // $createdAt = date.
 
-
+    //
+    // Get All Chat Messages From Server
+    //
     $.ajax({
       url: $url,
       type: "GET"
