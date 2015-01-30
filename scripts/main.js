@@ -12,21 +12,21 @@
     if (userName == null) {
       userName = "Anonymous";
     }
-
     var renderMessageTemplate = _.template($('.message-data').text());
     var messageTemplate = $('.messages-list');
 
     //
     // Get Chat Message from input field
     //
-    // $(".name-button").on("click", storeName);
+    // function getMessageAndUpdate() {
     $(".message-button").on("click", sendMessage);
 
-    // $(".name-button").click(function() {
-    //   ($(".message-container").scrollTop(400) + " px");
-    // });
-
-
+    //   if ($(".user-name-field") == "") {
+    //     alert("Enter a message!")
+    //   } else {
+    //     getMessages;
+    //   }
+    // }
 
     //
     // Store Username
@@ -40,6 +40,7 @@
     // Post message to Server
     //
     function sendMessage() {
+      var timeStamp = moment().format();
       var newMessage = $(".text-field").val();
       $.ajax({
         url: "http://tiny-pizza-server.herokuapp.com/collections/greenville-chats",
@@ -47,6 +48,7 @@
         data: {
           username: userName,
           message: newMessage,
+          createdAt: timeStamp
         }
       }).done(function(data) {
         console.log(data);
@@ -56,37 +58,44 @@
     //
     // Get All Messages from server
     //
+    function getMessages() {
+      messageTemplate.empty();
+      $.ajax({
+        url: serverURL,
+        type: "GET"
+      }).done(function(messages) {
+        messages = messages.reverse();
+        _.each(messages, function(message) {
 
-    // function getMessages() {
-    messageTemplate.empty();
-    $.ajax({
-      url: serverURL,
-      type: "GET"
-    }).done(function(messages) {
-      messages = messages.reverse();
-      _.each(messages, function(message) {
+          if (message.createdAt == null) {
+            message.createdAt = "unknown ago";
+          } else {
+            message.createdAt = moment(message.createdAt).fromNow();
+          }
 
-        if (message.createdAt == null) {
-          message.createdAt = "unknown ago";
-        } else {
-          message.createdAt = moment(message.createdAt).fromNow();
-        }
+          if (message.message == null) {
+            message.message = "";
+          }
 
-        if (message.message == null) {
-          message.message = "";
-        }
+          if (message.username == null) {
+            message.username = "";
+          }
 
-        messageTemplate.append(renderMessageTemplate(message));
+          messageTemplate.append(renderMessageTemplate(message));
 
+        });
       });
-    });
-    // }
-    // setInterval(getMessages, 5000);
+    }
+
+    //
+    // Update Interval
+    //
+    setInterval(getMessages, 3000);
 
     // $(".messages-container").animate({
     //   scrollTop: $('.messages-container')[0].scrollHeight
     // }, 1000);
-    // var interval = setInterval(function(){
+    // var interval = setInterval(function() {
     //   console.log(Date.now());
     // }, 1000);
     //
@@ -103,7 +112,5 @@
     //     });
     //   });
     // }, 3000);
-
-
   });
 })();
