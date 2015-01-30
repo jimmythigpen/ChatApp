@@ -82,7 +82,7 @@
           }
 
           messageTemplate.append(renderMessageTemplate(message));
-
+          $('.messages-container').scrollTop($('.messages-container').prop('scrollHeight'));
         });
       });
     }
