@@ -2,8 +2,11 @@
   'use strict';
 
   $(document).ready(function() {
-
     var serverURL = "http://tiny-pizza-server.herokuapp.com/collections/greenville-chats";
+    var updatedMessagesList;
+    var initialMessages;
+    var updateIDs;
+    var initialIDs;
 
     //
     // Find Username
@@ -16,28 +19,12 @@
     var messageTemplate = $('.messages-list');
 
     //
-    // Get Chat Message from input field
+    // Get Chat Message from input field and call sendMessage function
     //
-    // function getMessageAndUpdate() {
     $(".message-button").on("click", sendMessage);
 
-    //   if ($(".user-name-field") == "") {
-    //     alert("Enter a message!")
-    //   } else {
-    //     getMessages;
-    //   }
-    // }
-
     //
-    // Store Username
-    //
-    function storeName() {
-      userName = $(".user-name-field").val();
-      console.log(userName);
-    }
-
-    //
-    // Post message to Server
+    // Send/Post message to Server
     //
     function sendMessage() {
       var timeStamp = moment().format();
@@ -51,66 +38,145 @@
           createdAt: timeStamp
         }
       }).done(function(data) {
-        console.log(data);
+
+        // console.log(data);
       });
+      $('.text-field').val('');
     }
 
     //
-    // Get All Messages from server
+    // Initial Get All Messages From Server
     //
-    function getMessages() {
+    messageTemplate.empty();
+    $.ajax({
+      url: serverURL,
+      type: "GET"
+    }).done(function(messages) {
+      initialMessages = messages.reverse();
+      _.each(initialMessages, function(message) {
+        initialIDs = _.pluck(initialMessages, '_id');
+
+        //
+        // Pluck displayed IDs
+        //
+        // displayedIds = _.pluck(initialMessages, '_id');
+
+        if (message.createdAt == null) {
+          message.createdAt = "unknown ago";
+        } else {
+          message.createdAt = moment(message.createdAt).fromNow();
+        }
+
+        if (message.message == null) {
+          message.message = "";
+        }
+
+        if (message.username == null) {
+          message.username = "";
+        }
+        messageTemplate.append(renderMessageTemplate(message));
+
+        //
+        // Set container to start list display at bootom
+        //
+        $('.messages-container').scrollTop($('.messages-container').prop('scrollHeight'));
+      });
+    });
+
+    //
+    // Update New Messages To List
+    //
+    function update() {
       messageTemplate.empty();
       $.ajax({
         url: serverURL,
         type: "GET"
-      }).done(function(messages) {
-        messages = messages.reverse();
-        _.each(messages, function(message) {
+      }).done(function(allMessagesRefresh) {
+        updatedMessagesList = allMessagesRefresh.reverse();
+        _.each(updatedMessagesList, function(newMessage) {
 
-          if (message.createdAt == null) {
-            message.createdAt = "unknown ago";
+
+          if (newMessage.createdAt == null) {
+            newMessage.createdAt = "unknown ago";
           } else {
-            message.createdAt = moment(message.createdAt).fromNow();
+            newMessage.createdAt = moment(newMessage.createdAt).fromNow();
           }
 
-          if (message.message == null) {
-            message.message = "";
+          if (newMessage.message == null) {
+            newMessage.message = "";
           }
 
-          if (message.username == null) {
-            message.username = "";
+          if (newMessage.username == null) {
+            newMessage.username = "";
           }
 
-          messageTemplate.append(renderMessageTemplate(message));
-          $('.messages-container').scrollTop($('.messages-container').prop('scrollHeight'));
+          messageTemplate.append(renderMessageTemplate(newMessage));
+
         });
-      });
+        $('.messages-container').scrollTop($('.messages-container').prop('scrollHeight'));
+
+        //
+        // Check if updated IDs exist
+        //
+        if (updateIDs != undefined) {
+          initialIDs = updateIDs;
+        }
+      })
     }
+
+    function getIDs() {
+      updateIDs = _.pluck(updatedMessagesList, '_id');
+      var newMessages = _.difference(updateIDs, initialIDs);
+
+
+    }
+
 
     //
     // Update Interval
     //
-    setInterval(getMessages, 3000);
-
-    // $(".messages-container").animate({
-    //   scrollTop: $('.messages-container')[0].scrollHeight
-    // }, 1000);
-    // var interval = setInterval(function() {
-    //   console.log(Date.now());
-    // }, 1000);
-    //
+    setInterval(update, 10000);
     // clearInterval(interval);
+    setInterval(getIDs, 11000);
 
-    // setInterval(function() {
-    //
-    //   $.ajax({
-    //     url: serverURL,
-    //     type: "GET"
-    //   }).done(function(messages) {
-    //     _.each(messages, function(message) {
-    //       messageTemplate.append(renderMessageTemplate(message));
-    //     });
-    //   });
-    // }, 3000);
   });
 })();
+
+
+
+
+//
+// filter_.filter(list, predicate, [context]) Alias: select
+// Looks through each value in the list, returning an array of all the values that pass a truth test (predicate).
+//
+// var evens = _.filter([1, 2, 3, 4, 5, 6], function(num){ return num % 2 == 0; });
+// => [2, 4, 6]
+
+
+
+
+
+
+
+
+
+// var shownMessages = [];
+//
+// function initial(messages) {
+//   shownMessages = shownMessages.concat(messages);
+//   console.log(messages);
+// }
+//
+// function update(messages) {
+//   var newMessages = _.difference(messages, shownMessages);
+//   console.log(newMessages);
+//   shownMessages = shownMessages.concat(newMessages);
+// }
+//
+// initial([1, 2, 3]);
+// update([1, 2, 3, 4]);
+// update([1, 2, 3, 4, 5]);
+
+//  [1, 2, 3]
+//  [4]
+//  [5]
