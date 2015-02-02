@@ -127,17 +127,16 @@
     function getIDs() {
       updateIDs = _.pluck(updatedMessagesList, '_id');
       var newMessages = _.difference(updateIDs, initialIDs);
-
+      console.log(newMessages);
 
     }
-
 
     //
     // Update Interval
     //
-    setInterval(update, 10000);
+    setInterval(update, 2000);
     // clearInterval(interval);
-    setInterval(getIDs, 11000);
+    // setInterval(getIDs, 11000);
 
   });
 })();
