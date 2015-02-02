@@ -75,12 +75,14 @@
           message.username = "";
         }
         messageTemplate.append(renderMessageTemplate(message));
+        $('.messages-container').scrollTop($('.messages-container')[0].scrollHeight);
 
         //
         // Set container to start list display at bootom
         //
-        $('.messages-container').scrollTop($('.messages-container').prop('scrollHeight'));
+
       });
+
     });
 
     //
@@ -94,7 +96,6 @@
       }).done(function(allMessagesRefresh) {
         updatedMessagesList = allMessagesRefresh.reverse();
         _.each(updatedMessagesList, function(newMessage) {
-
 
           if (newMessage.createdAt == null) {
             newMessage.createdAt = "unknown ago";
@@ -113,7 +114,6 @@
           messageTemplate.append(renderMessageTemplate(newMessage));
 
         });
-        $('.messages-container').scrollTop($('.messages-container').prop('scrollHeight'));
 
         //
         // Check if updated IDs exist
@@ -121,7 +121,10 @@
         if (updateIDs != undefined) {
           initialIDs = updateIDs;
         }
+        // $('.messages-container').scrollTop($('.messages-container').prop('scrollHeight'));
+        $('.messages-container').scrollTop($('.messages-container')[0].scrollHeight);
       })
+
     }
 
     function getIDs() {
@@ -134,15 +137,12 @@
     //
     // Update Interval
     //
-    setInterval(update, 2000);
+    setInterval(update, 3000);
     // clearInterval(interval);
-    // setInterval(getIDs, 11000);
+    setInterval(getIDs, 3100);
 
   });
 })();
-
-
-
 
 //
 // filter_.filter(list, predicate, [context]) Alias: select
@@ -150,14 +150,6 @@
 //
 // var evens = _.filter([1, 2, 3, 4, 5, 6], function(num){ return num % 2 == 0; });
 // => [2, 4, 6]
-
-
-
-
-
-
-
-
 
 // var shownMessages = [];
 //
