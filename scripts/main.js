@@ -37,9 +37,6 @@
           message: newMessage,
           createdAt: timeStamp
         }
-      }).done(function(data) {
-
-        // console.log(data);
       });
       $('.text-field').val('');
     }
@@ -47,7 +44,6 @@
     //
     // Initial Get All Messages From Server
     //
-    messageTemplate.empty();
     $.ajax({
       url: serverURL,
       type: "GET"
@@ -55,12 +51,6 @@
       initialMessages = messages.reverse();
       _.each(initialMessages, function(message) {
         initialIDs = _.pluck(initialMessages, '_id');
-
-        //
-        // Pluck displayed IDs
-        //
-        // displayedIds = _.pluck(initialMessages, '_id');
-
         if (message.createdAt == null) {
           message.createdAt = "unknown ago";
         } else {
@@ -74,29 +64,19 @@
         if (message.username == null) {
           message.username = "";
         }
-        messageTemplate.append(renderMessageTemplate(message));
-        $('.messages-container').scrollTop($('.messages-container')[0].scrollHeight);
-
-        //
-        // Set container to start list display at bootom
-        //
-
       });
-
     });
 
     //
-    // Update New Messages To List
+    // Pull New Messages Form Server
     //
     function update() {
-      messageTemplate.empty();
       $.ajax({
         url: serverURL,
         type: "GET"
       }).done(function(allMessagesRefresh) {
         updatedMessagesList = allMessagesRefresh.reverse();
         _.each(updatedMessagesList, function(newMessage) {
-
           if (newMessage.createdAt == null) {
             newMessage.createdAt = "unknown ago";
           } else {
@@ -110,64 +90,56 @@
           if (newMessage.username == null) {
             newMessage.username = "";
           }
-
-          messageTemplate.append(renderMessageTemplate(newMessage));
-
         });
 
         //
-        // Check if updated IDs exist
+        // Check if updated IDs already exist
         //
         if (updateIDs != undefined) {
           initialIDs = updateIDs;
         }
-        // $('.messages-container').scrollTop($('.messages-container').prop('scrollHeight'));
-        $('.messages-container').scrollTop($('.messages-container')[0].scrollHeight);
       })
-
     }
+
+    //
+    // Compare initial IDs with updatedIDs and display new messages
+    //
 
     function getIDs() {
       updateIDs = _.pluck(updatedMessagesList, '_id');
-      var newMessages = _.difference(updateIDs, initialIDs);
-      console.log(newMessages);
+      var difference = _.difference(updateIDs, initialIDs);
+      var newList = _.filter(updatedMessagesList, function(m) {
+        return _.contains(difference, m._id);
+      });
+      _.each(newList, function(newMessageUpdate) {
+        if (newMessageUpdate.createdAt == null) {
+          newMessageUpdate.createdAt = "unknown ago";
+        } else {
+          newMessageUpdate.createdAt = moment(newMessageUpdate.createdAt).fromNow();
+        }
 
+        if (newMessageUpdate.message == null) {
+          newMessageUpdate.message = "";
+        }
+
+        if (newMessageUpdate.username == null) {
+          newMessageUpdate.username = "";
+        }
+        messageTemplate.append(renderMessageTemplate(newMessageUpdate));
+        $('.messages-container').scrollTop($('.messages-container')[0].scrollHeight);
+      });
     }
 
     //
     // Update Interval
     //
-    setInterval(update, 3000);
-    // clearInterval(interval);
-    setInterval(getIDs, 3100);
+    setInterval(update, 1500);
+    setInterval(getIDs, 1500);
+    setInterval(display, 1500);
+
+    function display() {
+      $('.messages-container').scrollTop($('.messages-container')[0].scrollHeight);
+    }
 
   });
 })();
-
-//
-// filter_.filter(list, predicate, [context]) Alias: select
-// Looks through each value in the list, returning an array of all the values that pass a truth test (predicate).
-//
-// var evens = _.filter([1, 2, 3, 4, 5, 6], function(num){ return num % 2 == 0; });
-// => [2, 4, 6]
-
-// var shownMessages = [];
-//
-// function initial(messages) {
-//   shownMessages = shownMessages.concat(messages);
-//   console.log(messages);
-// }
-//
-// function update(messages) {
-//   var newMessages = _.difference(messages, shownMessages);
-//   console.log(newMessages);
-//   shownMessages = shownMessages.concat(newMessages);
-// }
-//
-// initial([1, 2, 3]);
-// update([1, 2, 3, 4]);
-// update([1, 2, 3, 4, 5]);
-
-//  [1, 2, 3]
-//  [4]
-//  [5]
