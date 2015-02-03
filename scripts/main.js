@@ -22,6 +22,7 @@
     // Get Chat Message from input field and call sendMessage function
     //
     $(".message-button").on("click", sendMessage);
+    $(".message-button").on("click", display);
 
     //
     // Send/Post message to Server
@@ -126,7 +127,9 @@
           newMessageUpdate.username = "";
         }
         messageTemplate.append(renderMessageTemplate(newMessageUpdate));
-        $('.messages-container').scrollTop($('.messages-container')[0].scrollHeight);
+        if (newMessageUpdate != {}) {
+          $('.messages-container').scrollTop($('.messages-container')[0].scrollHeight);
+        }
       });
     }
 
@@ -135,7 +138,6 @@
     //
     setInterval(update, 1500);
     setInterval(getIDs, 1500);
-    setInterval(display, 1500);
 
     function display() {
       $('.messages-container').scrollTop($('.messages-container')[0].scrollHeight);
